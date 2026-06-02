@@ -17,7 +17,7 @@ jobs:
       # Étape 1.5 : Analyse de sécurité statique du code Python (Bandit)
       - name: Run Python Security Scan (Bandit)
         run: |
-          pip3 install bandit
+          pip3 install bandit --break-system-packages
           bandit -r ./azure-vote/
 
       # Étape 2 : Configurer l'environnement de build Docker
