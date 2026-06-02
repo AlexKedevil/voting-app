@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          load: true
           tags: ${{ secrets.DOCKER_USERNAME }}/voting-app:latest
 
       # Étape 5 : Analyser l'image avec Docker Scout pour la sécurité
