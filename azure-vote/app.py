@@ -1,11 +1,11 @@
-from flask import Flask, render_template_string
+from flask import Flask
 import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return render_template_string("""
+    return """
     <!DOCTYPE html>
     <html>
     <head>
@@ -22,7 +22,7 @@ def hello():
         </div>
     </body>
     </html>
-    """)
+    """
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
