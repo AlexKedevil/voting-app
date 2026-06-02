@@ -1,0 +1,52 @@
+name: CI/CD Pipeline for Voting App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Récupérer le code source du dépôt GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2 : Configurer l'environnement de build Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Étape 3 : Se connecter à Docker Hub à l'aide des secrets configurés
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Étape 4 : Compiler l'image Docker localement
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: ${{ secrets.DOCKER_USERNAME }}/voting-app:latest
+
+      # Étape 5 : Analyser l'image avec Docker Scout pour la sécurité
+      - name: Docker Scout Scan
+        uses: docker/scout-action@v1
+        with:
+          command: quickview,cves
+          image: ${{ secrets.DOCKER_USERNAME }}/voting-app:latest
+          only-severities: critical,high
+
+      # Étape 6 : Pousser l'image sur le registre Docker Hub
+      - name: Push Docker Image to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/voting-app:latest
